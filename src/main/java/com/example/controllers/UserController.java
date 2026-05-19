@@ -3,6 +3,7 @@ package com.example.controllers;
 import java.util.List;
 
 import com.example.App;
+import com.example.models.Password;
 import com.example.models.Storage;
 import com.example.models.User;
 
@@ -163,5 +164,12 @@ public class UserController {
             roleField.setText(user.getRole());
         }
     }
+
+    @FXML
+    void onClickGeneratePasswordButton(ActionEvent event) {
+        String newPassword = Password.generate();
+        passField.setText(newPassword);
+    }
+
 
 }

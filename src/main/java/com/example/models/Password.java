@@ -4,6 +4,5 @@ public class Password {
     
     public static String generate() {
         return "titok";
-
     }
 }
