@@ -3,6 +3,7 @@ package com.example.controllers;
 import java.util.List;
 
 import com.example.App;
+import com.example.models.Password;
 import com.example.models.Storage;
 import com.example.models.User;
 
@@ -55,7 +56,9 @@ public class UserController {
     }
 
     void startAdd() {
-        startValidate();
+        if(!startValidate()) {
+            return;
+        }
         User user = new User();
         user.setUser(userField.getText());
         user.setPass(passField.getText());
@@ -72,7 +75,7 @@ public class UserController {
             valid = false;
         }
         if (!isValidPassField()) {
-            showError("A jelszó kötelező!");
+            showError("Érvénytelen jelszó!");
             valid = false;
         }
         if (!isValidRoleField()) {
@@ -103,6 +106,9 @@ public class UserController {
         if (passField.getText().isEmpty()) {
             valid = false;
         }
+        if(!Password.isValid(passField.getText())) {
+            valid = false;
+        }
         return valid;
     }
 
@@ -127,40 +133,57 @@ public class UserController {
 
     @FXML
     void onClickDelButton(ActionEvent event) {
-
+        int index = userTable.getSelectionModel().getSelectedIndex();
+        userTable.getItems().remove(index);
     }
 
     @FXML
     void onClickModifyButton(ActionEvent event) {
-        System.out.println("Módosit...");
+        startModify();
+    }
+
+    void startModify() {
+        if(!startValidate()) {
+            return;
+        }        
+        System.out.println("Módosít...");
         int index = userTable.getSelectionModel().getFocusedIndex();
         System.out.println(index);
         User user = new User();
         user.setUser(userField.getText());
         user.setPass(passField.getText());
         user.setRole(roleField.getText());
-         
+
         userTable.getItems().set(index, user);
         userTable.setDisable(false);
         clearFields();
-
     }
 
     @FXML
     void onClickSaveButton(ActionEvent event) {
-
+        Storage.writeContent(userTable.getItems());
     }
 
     @FXML
     void onMouseClicked(MouseEvent event) {
-        if(event.getClickCount() == 2){
-            System.out.println("Dupla...");
+        if(event.getClickCount() == 2) {
             User user = userTable.getSelectionModel().getSelectedItem();
-            System.out.println(user.getUser());
             userField.setText(user.getUser());
             passField.setText(user.getPass());
             roleField.setText(user.getRole());
+            userTable.setDisable(true);
         }
+    }
+    
+    @FXML
+    void onClickPassGenerateButton(ActionEvent event) {
+        startPasswordGenerating();
+    }
+
+    void startPasswordGenerating() {
+        boolean[] setup = {true, true, true, true};
+        String newPass = Password.generate(setup, 6);
+        passField.setText(newPass);
     }
 
 }
